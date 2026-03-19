@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Container Kaart</title>
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+	<style>
+		body { margin: 0; padding: 8px; }
+		#map { width: 100%; height: 40vh; }
+	</style>
+</head>
+<body>
+	<div id="map"></div>
+	<button id="locate-btn">📍</button>
+	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+	<script>
+		const DEFAULT_LOCATION = [52.09358, 5.05789];
+		const map = L.map('map').setView(DEFAULT_LOCATION, 16);
+
+		L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
+		}).addTo(map);
+
+		let locationMarker = null;
+
+		function goToUserLocation() {
+			navigator.geolocation.getCurrentPosition(
+				(pos) => {
+					const { latitude, longitude } = pos.coords;
+					map.setView([latitude, longitude], 16);
+					if (locationMarker) locationMarker.remove();
+					locationMarker = L.marker([latitude, longitude]).addTo(map);
+				},
+				(err) => {
+					alert('Could not get your location.');
+				}
+			);
+		}
+
+		// If permission was already granted, go to user location immediately
+		if (navigator.permissions) {
+			navigator.permissions.query({ name: 'geolocation' }).then((result) => {
+				if (result.state === 'granted') goToUserLocation();
+			});
+		}
+
+		document.getElementById('locate-btn').addEventListener('click', goToUserLocation);
+	</script>
+</body>
+</html>
