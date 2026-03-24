@@ -8,12 +8,30 @@
 	<style>
 		body { margin: 0; padding: 8px; }
 		#map { width: 100%; height: 40vh; }
+		.leaflet-interactive:focus { outline: none; }
 	</style>
 </head>
 <body>
 	<div id="map"></div>
 	<button id="locate-btn">📍</button>
+	<select id="container-select">
+		<option value="">— select container —</option>
+	</select>
 	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+	<script type="application/json" id="container-data">[
+{"lat":52.0914209,"lon":5.0545399,"zip":"3544DD","oc":"8005","street":"Bladvlinder"},
+{"lat":52.0918384,"lon":5.0562544,"zip":"3544DV","oc":"3903","street":"Weerschijnvlinder"},
+{"lat":52.0920300,"lon":5.0571654,"zip":"3544DT","oc":"3465","street":"Weerschijnvlinder"},
+{"lat":52.0922847,"lon":5.0577451,"zip":"3544DV","oc":"3345","street":"Weerschijnvlinder"},
+{"lat":52.0924298,"lon":5.0597370,"zip":"3544DC","oc":"7941","street":"Monarchvlinderlaan"},
+{"lat":52.0927535,"lon":5.0609734,"zip":"3544DC","oc":"8011","street":"Monarchvlinderlaan"},
+{"lat":52.0928809,"lon":5.0548209,"zip":"3544DB","oc":"3463","street":"Vuurvlindersingel "},
+{"lat":52.0936309,"lon":5.0587977,"zip":"3544DN","oc":"7994","street":"Schoenlappervlinder"},
+{"lat":52.0937189,"lon":5.0561232,"zip":"3544DL","oc":"3464","street":"Vuurvlindersingel"},
+{"lat":52.0945318,"lon":5.0570537,"zip":"3544DL","oc":"8016","street":"Vuurvlindersingel"},
+{"lat":52.0948640,"lon":5.0575495,"zip":"3544DM","oc":"3904","street":"Heivlinder"}
+]
+</script>
 	<script>
 		const DEFAULT_LOCATION = [52.09358, 5.05789];
 		const map = L.map('map').setView(DEFAULT_LOCATION, 16);
@@ -46,6 +64,54 @@
 		}
 
 		document.getElementById('locate-btn').addEventListener('click', goToUserLocation);
+
+		const containers = JSON.parse(document.getElementById('container-data').textContent);
+		const select = document.getElementById('container-select');
+		const STYLE_DEFAULT = { radius: 5, color: '#e63946', fillColor: '#e63946', fillOpacity: 0.8, weight: 1 };
+		const STYLE_SELECTED = { radius: 8, color: '#1d6fa4', fillColor: '#1d6fa4', fillOpacity: 1, weight: 2 };
+
+		let suppressEvents = false;
+
+		const sorted = containers.map((c, i) => ({ c, i })).sort((a, b) => a.c.oc - b.c.oc);
+		sorted.forEach(({ c, i }) => {
+			const opt = document.createElement('option');
+			opt.value = i;
+			opt.textContent = `${c.oc} - ${c.street}`;
+			select.appendChild(opt);
+		});
+
+		const markers = containers.map((c, i) => {
+			const marker = L.circleMarker([c.lat, c.lon], { ...STYLE_DEFAULT })
+				.bindTooltip(`${c.street}<br>${c.zip}<br>${c.oc}`)
+				.addTo(map);
+			marker.on('click', () => {
+				if (suppressEvents) return;
+				suppressEvents = true;
+				selectContainer(i);
+				suppressEvents = false;
+			});
+
+			return marker;
+		});
+
+		let selectedIndex = null;
+
+		function selectContainer(i) {
+			if (selectedIndex !== null) markers[selectedIndex].setStyle(STYLE_DEFAULT);
+			selectedIndex = i;
+			markers[i].setStyle(STYLE_SELECTED);
+			map.panTo(markers[i].getLatLng());
+			select.value = i;
+		}
+
+		select.addEventListener('change', () => {
+			if (suppressEvents) return;
+			const i = parseInt(select.value, 10);
+			if (isNaN(i)) return;
+			suppressEvents = true;
+			selectContainer(i);
+			suppressEvents = false;
+		});
 	</script>
 </body>
 </html>
