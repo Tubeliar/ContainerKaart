@@ -66,9 +66,17 @@ distances = [
     (geodesic((target_lat, target_lon), (lat, lon)).meters, lat, lon, info)
     for lat, lon, info in containers
 ]
-closest = heapq.nsmallest(15, distances)
+closest = heapq.nsmallest(25, distances)
 
 # Output results
 print(f"\n15 closest restafval containers to ({target_lat}, {target_lon}):")
+lines = []
 for dist, lat, lon, info in closest:
     print(f"  {dist:6.0f}m  {lat}, {lon}  —  {info['address']}")
+    zip_ = json.dumps(info["postcode"])
+    oc = json.dumps(info["OcNumber"])
+    street = json.dumps(info["address"])
+    lines.append(f'{{"lat":{lat:.7f},"lon":{lon:.7f},"zip":{zip_},"oc":{oc},"street":{street}}}')
+print("[")
+print(",\n".join(sorted(lines)))
+print("]")
