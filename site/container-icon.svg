@@ -1,0 +1,34 @@
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+<symbol id="container-icon" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="bodyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="5%"   stop-color="#517294" />
+      <stop offset="20%"  stop-color="#6E92B6" />
+      <stop offset="30%"  stop-color="#517294" />
+    </linearGradient>
+    <linearGradient id="barrelGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#5D6D7E" />
+      <stop offset="35%"  stop-color="#ECF0F1" />
+      <stop offset="50%"  stop-color="#FFFFFF" />
+      <stop offset="65%"  stop-color="#ECF0F1" />
+      <stop offset="100%" stop-color="#5D6D7E" />
+    </linearGradient>
+  </defs>
+  <!-- base plate -->
+  <rect x="25" y="155" width="150" height="33" rx="8" fill="#BDC3C7" />
+  <rect x="25" y="180" width="150" height="8" fill="#95A5A6" />
+  <!-- Main body of the container -->
+  <path d="M50 165 L50 80 L60 65 Q60 55 70 55 L130 55 Q140 55 140 65 L150 80 L150 165 Z" fill="url(#bodyGradient)" />
+  <!-- Left and right door hinge / handle -->
+  <rect x="65" y="125" width="4" height="25" rx="2" fill="#2C3E50" />
+  <rect x="131" y="125" width="4" height="25" rx="2" fill="#2C3E50" />
+  <!-- Deposit barrel -->
+  <rect x="70" y="70" width="60" height="50" rx="8" fill="url(#barrelGradient)" />
+  <path d="M85 109 Q100 120 115 109" stroke="#7F8C8D" stroke-width="3" fill="none" stroke-linecap="round" />
+  <!-- Lifting anchor -->
+  <rect x="90" y="30" width="20" height="25" fill="#95A5A6" />
+  <ellipse cx="100" cy="45" rx="20" ry="4" fill="#BDC3C7" />
+  <ellipse cx="100" cy="30" rx="16" ry="3" fill="#BDC3C7" />
+</symbol>
+<use href="#container-icon" width="200" height="200"/>
+</svg>

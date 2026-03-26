@@ -1,0 +1,117 @@
+* { box-sizing: border-box; }
+
+body {
+	margin: 0;
+	padding: 12px;
+	height: 100dvh;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	font-family: sans-serif;
+}
+
+/* Portrait: left-panel is just a column of map + controls */
+#left-panel {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	flex-shrink: 0;
+}
+
+#map {
+	width: 100%;
+	aspect-ratio: 1;
+}
+
+.leaflet-interactive:focus { outline: none; }
+.container-marker { background: none; border: none; }
+.container-marker--selected { filter: drop-shadow(3px 0 2px #1d6fa4) drop-shadow(-3px 0 2px #1d6fa4) drop-shadow(0 3px 2px #1d6fa4) drop-shadow(0 -3px 2px #1d6fa4); }
+
+#controls {
+	display: flex;
+	gap: 8px;
+}
+
+#locate-btn {
+	width: 44px;
+	height: 44px;
+	flex-shrink: 0;
+	border-radius: 8px;
+	border: 1px solid #ccc;
+	background: #fff;
+	cursor: pointer;
+	font-size: 20px;
+}
+
+#container-select {
+	flex: 1;
+	height: 44px;
+	font-size: 16px; /* prevent iOS auto-zoom */
+	border-radius: 8px;
+	border: 1px solid #ccc;
+	padding: 0 8px;
+}
+
+#condition-grid {
+	flex: 1;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: repeat(3, 1fr);
+	gap: 8px;
+	container-type: inline-size; /* lets buttons use cqi units relative to grid width */
+}
+
+.condition-btn {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 5px;
+	border: 2px solid #d0d0d0;
+	border-radius: 10px;
+	background: #f7f7f7;
+	cursor: pointer;
+	padding: 6px;
+	transition: border-color 0.15s, background 0.15s;
+	/* Stretch to fill the cell, but never taller than 3:4.
+	   50cqi = half the grid width = one button column width (minus the gap).
+	   So (50cqi - 4px) * 4/3 is exactly the 3:4 height cap relative to
+	   the actual button width, regardless of layout or orientation. */
+	width: 100%;
+	max-height: calc((50cqi - 4px) * 4 / 3);
+}
+.condition-btn:hover { border-color: #aaa; background: #efefef; }
+.condition-btn.selected { border-color: #1d6fa4; background: #e3f2fd; }
+
+.condition-btn svg {
+	width: clamp(36px, 40%, 72px);
+	height: auto;
+}
+
+.condition-btn span {
+	font-size: 13px;
+	font-weight: 500;
+	text-align: center;
+	line-height: 1.2;
+	color: #333;
+}
+
+/* Landscape: map on the left, buttons on the right */
+@media (orientation: landscape) {
+	body { flex-direction: row; }
+
+	#left-panel {
+		flex: 1;
+		min-width: 0;
+	}
+
+	#map {
+		aspect-ratio: unset;
+		flex: 1;
+	}
+
+	#condition-grid {
+		flex: none;
+		width: 42%;
+	}
+}

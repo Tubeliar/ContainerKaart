@@ -5,50 +5,46 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Container Kaart</title>
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-	<style>
-		body { margin: 0; padding: 8px; }
-		#map { width: 100%; height: 40vh; }
-		.leaflet-interactive:focus { outline: none; }
-		.container-marker { background: none; border: none; }
-		.container-marker--selected { filter: drop-shadow(3px 0 2px #1d6fa4) drop-shadow(-3px 0 2px #1d6fa4) drop-shadow(0 3px 2px #1d6fa4) drop-shadow(0 -3px 2px #1d6fa4); }
-	</style>
+	<link rel="stylesheet" href="style.css" />
 </head>
 <body>
-	<!-- Hidden SVG sprite — defines gradients and the container symbol once for all markers -->
-	<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden">
-		<symbol id="container-icon" viewBox="0 0 200 200">
-			<defs>
-				<linearGradient id="bodyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-					<stop offset="5%"   stop-color="#517294" />
-					<stop offset="20%"  stop-color="#6E92B6" />
-					<stop offset="30%"  stop-color="#517294" />
-				</linearGradient>
-				<linearGradient id="barrelGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-					<stop offset="0%"   stop-color="#5D6D7E" />
-					<stop offset="35%"  stop-color="#ECF0F1" />
-					<stop offset="50%"  stop-color="#FFFFFF" />
-					<stop offset="65%"  stop-color="#ECF0F1" />
-					<stop offset="100%" stop-color="#5D6D7E" />
-				</linearGradient>
-			</defs>
-			<rect x="25" y="155" width="150" height="33" rx="8" fill="#BDC3C7" />
-			<rect x="25" y="180" width="150" height="8" fill="#95A5A6" />
-			<path d="M50 165 L50 80 L60 65 Q60 55 70 55 L130 55 Q140 55 140 65 L150 80 L150 165 Z" fill="url(#bodyGradient)" />
-			<rect x="65" y="125" width="4" height="25" rx="2" fill="#2C3E50" />
-			<rect x="131" y="125" width="4" height="25" rx="2" fill="#2C3E50" />
-			<rect x="70" y="70" width="60" height="50" rx="8" fill="url(#barrelGradient)" />
-			<path d="M85 109 Q100 120 115 109" stroke="#7F8C8D" stroke-width="3" fill="none" stroke-linecap="round" />
-			<rect x="90" y="30" width="20" height="25" fill="#95A5A6" />
-			<ellipse cx="100" cy="45" rx="20" ry="4" fill="#BDC3C7" />
-			<ellipse cx="100" cy="30" rx="16" ry="3" fill="#BDC3C7" />
-		</symbol>
-	</svg>
+	<div id="left-panel">
+		<div id="map"></div>
+		<div id="controls">
+			<button id="locate-btn">📍</button>
+			<select id="container-select">
+				<option value="">— select container —</option>
+			</select>
+		</div>
+	</div>
 
-	<div id="map"></div>
-	<button id="locate-btn">📍</button>
-	<select id="container-select">
-		<option value="">— select container —</option>
-	</select>
+	<div id="condition-grid">
+		<button class="condition-btn" data-condition="clean">
+			<svg viewBox="0 0 200 200"><use href="container-icon.svg#container-icon"/></svg>
+			<span>Clean</span>
+		</button>
+		<button class="condition-btn" data-condition="good">
+			<svg viewBox="0 0 200 200"><use href="container-icon.svg#container-icon"/></svg>
+			<span>Good</span>
+		</button>
+		<button class="condition-btn" data-condition="minor-clutter">
+			<svg viewBox="0 0 200 200"><use href="container-icon.svg#container-icon"/></svg>
+			<span>Minor clutter</span>
+		</button>
+		<button class="condition-btn" data-condition="cluttered">
+			<svg viewBox="0 0 200 200"><use href="container-icon.svg#container-icon"/></svg>
+			<span>Cluttered</span>
+		</button>
+		<button class="condition-btn" data-condition="messy">
+			<svg viewBox="0 0 200 200"><use href="container-icon.svg#container-icon"/></svg>
+			<span>Messy</span>
+		</button>
+		<button class="condition-btn" data-condition="blocked">
+			<svg viewBox="0 0 200 200"><use href="container-icon.svg#container-icon"/></svg>
+			<span>Blocked / Unusable</span>
+		</button>
+	</div>
+
 	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 	<script type="application/json" id="container-data">
 [
@@ -103,7 +99,7 @@
 		function makeIcon(selected) {
 			const size = 40;
 			return L.divIcon({
-				html: `<svg viewBox="0 0 200 200" width="${size}" height="${size}"><use href="#container-icon"/></svg>`,
+				html: `<svg viewBox="0 0 200 200" width="${size}" height="${size}"><use href="container-icon.svg#container-icon"/></svg>`,
 				className: 'container-marker' + (selected ? ' container-marker--selected' : ''),
 				iconSize: [size, size],
 				iconAnchor: [size / 2, size],
@@ -152,6 +148,15 @@
 			suppressEvents = true;
 			selectContainer(i);
 			suppressEvents = false;
+		});
+
+		let selectedCondition = null;
+		document.querySelectorAll('.condition-btn').forEach(btn => {
+			btn.addEventListener('click', () => {
+				if (selectedCondition) selectedCondition.classList.remove('selected');
+				selectedCondition = btn;
+				btn.classList.add('selected');
+			});
 		});
 	</script>
 </body>
