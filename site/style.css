@@ -25,19 +25,22 @@ body {
 
 .leaflet-interactive:focus { outline: none; }
 .container-marker { background: none; border: none; }
-.container-marker--selected { filter: drop-shadow(3px 0 2px #1d6fa4) drop-shadow(-3px 0 2px #1d6fa4) drop-shadow(0 3px 2px #1d6fa4) drop-shadow(0 -3px 2px #1d6fa4); }
+.container-marker--selected { filter: drop-shadow(5px 0 3px #6ab0d8) drop-shadow(-5px 0 3px #6ab0d8) drop-shadow(0 5px 3px #6ab0d8) drop-shadow(0 -5px 3px #6ab0d8); }
 
 #controls {
 	display: flex;
 	gap: 8px;
 }
 
-#locate-btn {
-	width: 44px;
+#locate-btn, #container-select {
 	height: 44px;
-	flex-shrink: 0;
 	border-radius: 8px;
 	border: 1px solid #ccc;
+}
+
+#locate-btn {
+	width: 44px;
+	flex-shrink: 0;
 	background: #fff;
 	cursor: pointer;
 	font-size: 20px;
@@ -45,32 +48,40 @@ body {
 
 #container-select {
 	flex: 1;
-	height: 44px;
 	font-size: 16px; /* prevent iOS auto-zoom */
-	border-radius: 8px;
-	border: 1px solid #ccc;
 	padding: 0 8px;
+}
+
+#right-panel {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
 }
 
 #condition-grid {
 	flex: 1;
 	display: grid;
 	grid-template-columns: 1fr 1fr;
-	grid-template-rows: repeat(3, 1fr);
+	grid-template-rows: repeat(7, 1fr);
 	gap: 8px;
 	container-type: inline-size; /* lets buttons use cqi units relative to grid width */
 }
 
+.condition-btn, #submit-btn {
+	border-radius: 10px;
+	cursor: pointer;
+}
+
 .condition-btn {
+	grid-row: span 2;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
 	gap: 5px;
 	border: 2px solid #d0d0d0;
-	border-radius: 10px;
 	background: #f7f7f7;
-	cursor: pointer;
 	padding: 6px;
 	transition: border-color 0.15s, background 0.15s;
 	/* Stretch to fill the cell, but never taller than 3:4.
@@ -96,6 +107,38 @@ body {
 	color: #333;
 }
 
+#submit-btn {
+	grid-column: 1 / -1;
+	max-height: calc((50cqi - 4px) * 2 / 3);
+	font-size: 16px;
+	font-weight: 600;
+	border: none;
+	background: #1d6fa4;
+	color: #fff;
+	transition: background 0.15s;
+}
+#submit-btn:hover:not(:disabled) { background: #165a87; }
+#submit-btn:disabled {
+	background: #b0c8db;
+	cursor: not-allowed;
+}
+
+#status-msg {
+	min-height: 1.4em;
+	text-align: center;
+	font-size: 14px;
+	font-weight: 500;
+	border-radius: 8px;
+	padding: 4px 8px;
+}
+#status-msg.pending { color: #555; }
+#status-msg.success { color: #1a7a3a; background: #e6f4ea; }
+#status-msg.error   { color: #b00020; background: #fdecea; }
+
+@media (orientation: portrait) {
+	#map { max-height: 50dvh; }
+}
+
 /* Landscape: map on the left, buttons on the right */
 @media (orientation: landscape) {
 	body { flex-direction: row; }
@@ -110,7 +153,7 @@ body {
 		flex: 1;
 	}
 
-	#condition-grid {
+	#right-panel {
 		flex: none;
 		width: 42%;
 	}

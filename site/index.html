@@ -18,31 +18,35 @@
 		</div>
 	</div>
 
-	<div id="condition-grid">
-		<button class="condition-btn" data-condition="clean">
-			<svg viewBox="0 0 200 200"><use href="container-icon.svg#container-icon"/></svg>
-			<span>Clean</span>
-		</button>
-		<button class="condition-btn" data-condition="good">
-			<svg viewBox="0 0 200 200"><use href="container-icon.svg#container-icon"/></svg>
-			<span>Good</span>
-		</button>
-		<button class="condition-btn" data-condition="minor-clutter">
-			<svg viewBox="0 0 200 200"><use href="container-icon.svg#container-icon"/></svg>
-			<span>Minor clutter</span>
-		</button>
-		<button class="condition-btn" data-condition="cluttered">
-			<svg viewBox="0 0 200 200"><use href="container-icon.svg#container-icon"/></svg>
-			<span>Cluttered</span>
-		</button>
-		<button class="condition-btn" data-condition="messy">
-			<svg viewBox="0 0 200 200"><use href="container-icon.svg#container-icon"/></svg>
-			<span>Messy</span>
-		</button>
-		<button class="condition-btn" data-condition="blocked">
-			<svg viewBox="0 0 200 200"><use href="container-icon.svg#container-icon"/></svg>
-			<span>Blocked / Unusable</span>
-		</button>
+	<div id="right-panel">
+		<div id="condition-grid">
+			<button class="condition-btn" data-condition="0">
+				<svg viewBox="0 0 200 200"><use href="container-icon.svg#container-icon"/></svg>
+				<span>Clean</span>
+			</button>
+			<button class="condition-btn" data-condition="1">
+				<svg viewBox="0 0 200 200"><use href="container-icon.svg#container-icon"/></svg>
+				<span>Good</span>
+			</button>
+			<button class="condition-btn" data-condition="2">
+				<svg viewBox="0 0 200 200"><use href="container-icon.svg#container-icon"/></svg>
+				<span>Minor clutter</span>
+			</button>
+			<button class="condition-btn" data-condition="3">
+				<svg viewBox="0 0 200 200"><use href="container-icon.svg#container-icon"/></svg>
+				<span>Cluttered</span>
+			</button>
+			<button class="condition-btn" data-condition="4">
+				<svg viewBox="0 0 200 200"><use href="container-icon.svg#container-icon"/></svg>
+				<span>Messy</span>
+			</button>
+			<button class="condition-btn" data-condition="5">
+				<svg viewBox="0 0 200 200"><use href="container-icon.svg#container-icon"/></svg>
+				<span>Blocked / Unusable</span>
+			</button>
+			<button id="submit-btn" disabled>Submit</button>
+		</div>
+		<div id="status-msg"></div>
 	</div>
 
 	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -139,6 +143,7 @@
 			markers[i].setIcon(makeIcon(true));
 			map.panTo(markers[i].getLatLng());
 			select.value = i;
+			updateSubmitState();
 		}
 
 		select.addEventListener('change', () => {
@@ -150,13 +155,61 @@
 			suppressEvents = false;
 		});
 
+		const submitBtn = document.getElementById('submit-btn');
+
+		function updateSubmitState() {
+			submitBtn.disabled = !select.value || !selectedCondition;
+		}
+
+		select.addEventListener('change', updateSubmitState);
+
 		let selectedCondition = null;
 		document.querySelectorAll('.condition-btn').forEach(btn => {
 			btn.addEventListener('click', () => {
 				if (selectedCondition) selectedCondition.classList.remove('selected');
 				selectedCondition = btn;
 				btn.classList.add('selected');
+				updateSubmitState();
 			});
+		});
+
+		const statusMsg = document.getElementById('status-msg');
+
+		function setStatus(text, type) {
+			statusMsg.textContent = text;
+			statusMsg.className = type; // 'pending', 'success', 'error', or ''
+		}
+
+		function resetSelection() {
+			if (selectedIndex !== null) markers[selectedIndex].setIcon(makeIcon(false));
+			selectedIndex = null;
+			select.value = '';
+			if (selectedCondition) selectedCondition.classList.remove('selected');
+			selectedCondition = null;
+			updateSubmitState();
+		}
+
+		submitBtn.addEventListener('click', async () => {
+			const container = containers[parseInt(select.value, 10)];
+			const condition = parseInt(selectedCondition.dataset.condition, 10);
+
+			submitBtn.disabled = true;
+			setStatus('Sending…', 'pending');
+
+			try {
+				const response = await fetch('/submit', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ container_oc: container.oc, condition }),
+				});
+				if (!response.ok) throw new Error(`Server error ${response.status}`);
+				setStatus('Submitted!', 'success');
+				resetSelection();
+				setTimeout(() => setStatus('', ''), 3000);
+			} catch (e) {
+				setStatus(`Failed to send — please try again. (${e.message})`, 'error');
+				submitBtn.disabled = false;
+			}
 		});
 	</script>
 </body>
