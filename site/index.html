@@ -11,10 +11,11 @@
 	<div id="left-panel">
 		<div id="map"></div>
 		<div id="controls">
-			<button id="locate-btn">📍</button>
+			<button id="locate-btn" class="icon-btn">📍</button>
 			<select id="container-select">
-				<option value="">— select container —</option>
+				<option value="" data-i18n="select_placeholder"></option>
 			</select>
+			<button id="lang-btn" class="icon-btn"></button>
 		</div>
 	</div>
 
@@ -22,29 +23,29 @@
 		<div id="condition-grid">
 			<button class="condition-btn" data-condition="0">
 				<svg viewBox="0 0 200 200"><use href="container-icon.svg#container-icon"/></svg>
-				<span>Clean</span>
+				<span data-i18n="condition_0"></span>
 			</button>
 			<button class="condition-btn" data-condition="1">
 				<svg viewBox="0 0 200 200"><use href="container-icon.svg#container-icon"/></svg>
-				<span>Good</span>
+				<span data-i18n="condition_1"></span>
 			</button>
 			<button class="condition-btn" data-condition="2">
 				<svg viewBox="0 0 200 200"><use href="container-icon.svg#container-icon"/></svg>
-				<span>Minor clutter</span>
+				<span data-i18n="condition_2"></span>
 			</button>
 			<button class="condition-btn" data-condition="3">
 				<svg viewBox="0 0 200 200"><use href="container-icon.svg#container-icon"/></svg>
-				<span>Cluttered</span>
+				<span data-i18n="condition_3"></span>
 			</button>
 			<button class="condition-btn" data-condition="4">
 				<svg viewBox="0 0 200 200"><use href="container-icon.svg#container-icon"/></svg>
-				<span>Messy</span>
+				<span data-i18n="condition_4"></span>
 			</button>
 			<button class="condition-btn" data-condition="5">
 				<svg viewBox="0 0 200 200"><use href="container-icon.svg#container-icon"/></svg>
-				<span>Blocked / Unusable</span>
+				<span data-i18n="condition_5"></span>
 			</button>
-			<button id="submit-btn" disabled>Submit</button>
+			<button id="submit-btn" data-i18n="submit" disabled></button>
 		</div>
 		<div id="status-msg"></div>
 	</div>
@@ -66,6 +67,61 @@
 ]
 	</script>
 	<script>
+		const translations = {
+			en: {
+				select_placeholder: '— select container —',
+				condition_0: 'Clean',
+				condition_1: 'Good',
+				condition_2: 'Minor clutter',
+				condition_3: 'Cluttered',
+				condition_4: 'Messy',
+				condition_5: 'Blocked / Unusable',
+				submit: 'Submit',
+				sending: 'Sending…',
+				submitted: 'Submitted!',
+				failed: 'Failed to send — please try again.',
+				location_error: 'Could not get your location.',
+			},
+			nl: {
+				select_placeholder: '— kies container —',
+				condition_0: 'Schoon',
+				condition_1: 'Goed',
+				condition_2: 'Lichte rommel',
+				condition_3: 'Rommelig',
+				condition_4: 'Erg rommelig',
+				condition_5: 'Geblokkeerd / Onbruikbaar',
+				submit: 'Verstuur',
+				sending: 'Versturen…',
+				submitted: 'Verstuurd!',
+				failed: 'Versturen mislukt — probeer opnieuw.',
+				location_error: 'Kon je locatie niet bepalen.',
+			},
+		};
+
+		const savedLocale = localStorage.getItem('locale');
+		const browserLocale = navigator.language.startsWith('nl') ? 'nl' : 'en';
+		let locale = savedLocale || browserLocale;
+
+		function t(key) {
+			return translations[locale][key] ?? translations.en[key] ?? key;
+		}
+
+		function applyTranslations() {
+			document.documentElement.lang = locale;
+			document.querySelectorAll('[data-i18n]').forEach(el => {
+				el.textContent = t(el.dataset.i18n);
+			});
+			document.getElementById('lang-btn').textContent = locale === 'en' ? '🇳🇱' : '🇬🇧';
+		}
+
+		applyTranslations();
+
+		document.getElementById('lang-btn').addEventListener('click', () => {
+			locale = locale === 'en' ? 'nl' : 'en';
+			localStorage.setItem('locale', locale);
+			applyTranslations();
+		});
+
 		const DEFAULT_LOCATION = [52.09358, 5.05789];
 		const map = L.map('map').setView(DEFAULT_LOCATION, 16);
 
@@ -84,7 +140,7 @@
 					locationMarker = L.marker([latitude, longitude]).addTo(map);
 				},
 				(err) => {
-					alert('Could not get your location.');
+					setStatus(t('location_error'), 'error');
 				}
 			);
 		}
@@ -161,8 +217,6 @@
 			submitBtn.disabled = !select.value || !selectedCondition;
 		}
 
-		select.addEventListener('change', updateSubmitState);
-
 		let selectedCondition = null;
 		document.querySelectorAll('.condition-btn').forEach(btn => {
 			btn.addEventListener('click', () => {
@@ -194,7 +248,7 @@
 			const condition = parseInt(selectedCondition.dataset.condition, 10);
 
 			submitBtn.disabled = true;
-			setStatus('Sending…', 'pending');
+			setStatus(t('sending'), 'pending');
 
 			try {
 				const response = await fetch('/submit', {
@@ -203,11 +257,11 @@
 					body: JSON.stringify({ container_oc: container.oc, condition }),
 				});
 				if (!response.ok) throw new Error(`Server error ${response.status}`);
-				setStatus('Submitted!', 'success');
+				setStatus(t('submitted'), 'success');
 				resetSelection();
 				setTimeout(() => setStatus('', ''), 3000);
 			} catch (e) {
-				setStatus(`Failed to send — please try again. (${e.message})`, 'error');
+				setStatus(`${t('failed')} (${e.message})`, 'error');
 				submitBtn.disabled = false;
 			}
 		});

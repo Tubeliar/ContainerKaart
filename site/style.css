@@ -3,7 +3,7 @@
 body {
 	margin: 0;
 	padding: 12px;
-	height: 100dvh;
+	height: 100svh;
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
@@ -32,13 +32,13 @@ body {
 	gap: 8px;
 }
 
-#locate-btn, #container-select {
+.icon-btn, #container-select {
 	height: 44px;
 	border-radius: 8px;
 	border: 1px solid #ccc;
 }
 
-#locate-btn {
+.icon-btn {
 	width: 44px;
 	flex-shrink: 0;
 	background: #fff;
@@ -48,6 +48,7 @@ body {
 
 #container-select {
 	flex: 1;
+	min-width: 0;
 	font-size: 16px; /* prevent iOS auto-zoom */
 	padding: 0 8px;
 }
@@ -95,7 +96,7 @@ body {
 .condition-btn.selected { border-color: #1d6fa4; background: #e3f2fd; }
 
 .condition-btn svg {
-	width: clamp(36px, 40%, 72px);
+	width: clamp(24px, 25%, 56px);
 	height: auto;
 }
 
@@ -124,8 +125,10 @@ body {
 }
 
 #status-msg {
-	min-height: 1.4em;
-	text-align: center;
+	height: 44px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	font-size: 14px;
 	font-weight: 500;
 	border-radius: 8px;
@@ -136,7 +139,7 @@ body {
 #status-msg.error   { color: #b00020; background: #fdecea; }
 
 @media (orientation: portrait) {
-	#map { max-height: 50dvh; }
+	#map { max-height: 30svh; }
 }
 
 /* Landscape: map on the left, buttons on the right */
