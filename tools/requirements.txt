@@ -1,2 +1,3 @@
+# Dependencies for the data-fetching tools in this directory.
 requests
 geopy

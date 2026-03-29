@@ -1,2 +1,2 @@
 *.json
-tools/python-venv
+python-venv/

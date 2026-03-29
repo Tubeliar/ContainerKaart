@@ -1,0 +1,2 @@
+# Server dependencies for the Flask web app.
+flask
