@@ -1,3 +1,5 @@
 *.json
 python-venv/
 reports.db
+# index.html is a generated file, so ignore it
+site/index.html
