@@ -75,7 +75,7 @@ body {
 }
 
 .condition-btn {
-	grid-row: span 2;
+	grid-row: span 3;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -84,6 +84,7 @@ body {
 	border: 2px solid #d0d0d0;
 	background: #f7f7f7;
 	padding: 6px;
+	overflow: hidden;
 	transition: border-color 0.15s, background 0.15s;
 	/* Stretch to fill the cell, but never taller than 3:4.
 	   50cqi = half the grid width = one button column width (minus the gap).
@@ -96,8 +97,10 @@ body {
 .condition-btn.selected { border-color: #1d6fa4; background: #e3f2fd; }
 
 .condition-btn svg {
-	width: clamp(24px, 25%, 56px);
-	height: auto;
+	flex: 1;
+	min-height: 0;
+	width: auto;
+	max-width: 100%;
 }
 
 .condition-btn span {

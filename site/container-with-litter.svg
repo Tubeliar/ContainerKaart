@@ -1,0 +1,17 @@
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+  <use href="container-icon.svg#container-icon" width="200" height="200"/>
+
+  <!-- Litter on base plate (base plate top is at y=155, sides x=25-50 and x=150-175) -->
+
+  <!-- Crumpled paper ball, left side -->
+  <circle cx="37" cy="162" r="13" fill="#E8E0C8" stroke="#BFBAA0" stroke-width="2"/>
+  <path d="M27 157 Q37 152 47 160" stroke="#BFBAA0" stroke-width="2" fill="none"/>
+  <path d="M30 165 Q40 170 50 162" stroke="#BFBAA0" stroke-width="2" fill="none"/>
+
+  <!-- Small plastic bottle, right side -->
+  <rect x="154" y="140" width="15" height="33" rx="5" fill="#C8E6F5" stroke="#90C4E0" stroke-width="1.75" opacity="0.85"/>
+  <rect x="156" y="136" width="10" height="10" rx="2.5" fill="#90C4E0" stroke="#6AAED0" stroke-width="1.5"/>
+
+  <!-- Scrap / wrapper near left, slightly more toward center -->
+  <path d="M56 164 Q66 154 76 162 Q71 172 61 169 Z" fill="#F2D98A" stroke="#C8AF55" stroke-width="1.5" opacity="0.9"/>
+</svg>

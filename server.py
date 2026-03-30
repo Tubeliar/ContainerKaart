@@ -84,10 +84,12 @@ def submit():
     return '', 204
 
 
+if 'FINGERPRINT_KEY' in os.environ:
+    print("FINGERPRINT_KEY loaded from environment.")
+else:
+    print("WARNING: FINGERPRINT_KEY not set. Using insecure default — set the env var before deploying.")
+
+init_db()
+
 if __name__ == '__main__':
-    if 'FINGERPRINT_KEY' in os.environ:
-        print("FINGERPRINT_KEY loaded from environment.")
-    else:
-        print("WARNING: FINGERPRINT_KEY not set. Using insecure default — set the env var before deploying.")
-    init_db()
     app.run(host='0.0.0.0', port=8080, debug=True)
